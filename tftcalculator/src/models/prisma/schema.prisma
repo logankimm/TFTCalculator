@@ -1,0 +1,104 @@
+generator client {
+  provider = ""
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:biochemiStry99*@localhost:5433/postgres?schema=public"
+}
+
+model Champion {
+  champion_id   Int     @id @default(autoincrement())
+  champion_name String
+  image_url     String
+  summary       String?
+}
+
+model Champion_Patch {
+  champion_patch_id Int @id @default(autoincrement())
+  champion_set_id Int
+
+  champion_set Champion_Set @relation(fields: [champion_set_id], references: [champion_set_id])
+  champion_patch_stat Champion_Patch_Stat?
+}
+
+model Champion_Patch_Stat {
+  champion_patch_stat_id Int @id @default(autoincrement())
+  champion_patch_id Int @unique
+  ad Int
+  AS Int
+  starting_mana Int
+  total_mana Int
+  armor Int
+  magic_resist Int
+  hp Int
+  crit_chance Int
+
+  champion_patch Champion_Patch @relation(fields: [champion_patch_id], references: [champion_patch_id])
+}
+
+model Champion_Set {
+  champion_set_id Int @id @default(autoincrement())
+  champion_id Int
+
+  champion_patches Champion_Patch[]
+}
+
+model Patch {
+  patch_id Int @id @default(autoincrement())
+  deployment_date DateTime
+  major_version Int
+  minor_version Int
+  patch_version Int
+}
+
+model Set {
+  set_id         Int      @id @default(autoincrement())
+  set_name       Int      
+  major_version  Int     
+  minor_version  Int      
+  release_date   DateTime
+
+  trait_set Trait_Set?
+}
+
+model Trait {
+  trait_id         Int      @id @default(autoincrement())
+  trait_name       Int      
+  trait_image_url  String     
+}
+
+model Trait_Breakpoint {
+  trait_variable_id         Int      @id @default(autoincrement())
+  minimum_amount       Int      
+  maximum_amount  Int     
+  tier_color_type  Int     
+  description  String     
+}
+
+model Trait_Patch {
+  trait_patch_id         Int      @id @default(autoincrement())
+  trait_id       Int      
+  patch_id  Int     
+}
+
+model Trait_Patch_Breakpoint_Matrix {
+  trait_patch_breakpoint_matrix_id          Int      @id @default(autoincrement())
+  trait_patch_id        Int      
+  trait_breakpoint_id   Int     
+}
+
+model Trait_Patch_Breakpoint_Variable_Matrix {
+  trait_patch_breakpoint_variable_matrix_id           Int      @id @default(autoincrement())
+  trait_breakpoint_id         Int      
+  trait_variable_breakpoint_id    Int     
+}
+
+model Trait_Set {
+  trait_set_id     Int      
+  set_id           Int      @unique
+  is_fixed         Boolean  
+  description      String   
+
+  set              Set      @relation(fields: [set_id], references: [set_id])
+}
